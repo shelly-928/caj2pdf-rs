@@ -1,0 +1,41 @@
+    name: Build Windows Binaries
+
+    on:
+      workflow_dispatch: # 支持在 Actions 界面手动一键点击运行
+      push:
+        branches: [main, master]
+        paths-ignore:
+          - 'README.md'
+          - 'docs/**'
+
+    jobs:
+      build-windows:
+        name: Build for Windows (x86_64)
+        runs-on: windows-latest
+
+        steps:
+          - name: Checkout repository
+            uses: actions/checkout@v4
+
+          - name: Setup Rust toolchain
+            uses: dtolnay/rust-toolchain@stable
+
+          - name: Rust Cache
+            uses: Swatinem/rust-cache@v2
+
+          - name: Build Release (CLI & GUI)
+            run: cargo build --release --workspace
+
+          - name: Prepare Artifacts
+            shell: pwsh
+            run: |
+              New-Item -ItemType Directory -Force -Path dist
+              Copy-Item target/release/caj2pdf.exe dist/
+              Copy-Item target/release/caj2pdf-gui.exe dist/
+
+          - name: Upload Binaries
+            uses: actions/upload-artifact@v4
+            with:
+              name: caj2pdf-windows-x64
+              path: dist/*
+              if-no-files-found: error
