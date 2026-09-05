@@ -1,12 +1,7 @@
     name: Build Windows Binaries
 
     on:
-      workflow_dispatch: # 支持在 Actions 界面手动一键点击运行
-      push:
-        branches: [main, master]
-        paths-ignore:
-          - 'README.md'
-          - 'docs/**'
+      workflow_dispatch: # 仅支持在 Actions 界面手动点击运行
 
     jobs:
       build-windows:
